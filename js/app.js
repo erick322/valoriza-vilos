@@ -95,7 +95,14 @@
   // Vuelta desde un enlace del correo, o sesión ya abierta: se trae lo guardado en Supabase.
   Cloud.fromUrl().then((r) => {
     if (!r) return state.user && Store.pull(state.user);
-    if (r.error) return App.setState({ authError: r.error === 'otp_expired' ? 'El enlace del correo expiró. Pide uno nuevo.' : 'No se pudo usar el enlace del correo.' }, 'view');
+    if (r.error) {
+      const msg = {
+        otp_expired: 'El enlace del correo expiró. Pide uno nuevo.',
+        foreign_link: 'Ese enlace no se pidió desde este navegador. Ábrelo en el navegador donde creaste la cuenta o pediste la contraseña, o inicia sesión aquí.'
+      }[r.error] || 'No se pudo usar el enlace del correo. Pide uno nuevo.';
+      if (state.user) Store.pull(state.user); // la sesión que ya estaba abierta sigue igual
+      return App.setState({ authError: msg }, 'view');
+    }
     Actions.enterSession(r.type === 'recovery' ? 'newPass' : 'list');
   }).catch(() => App.setState({ authError: 'No se pudo usar el enlace del correo. Pide uno nuevo.' }, 'view'));
 })();

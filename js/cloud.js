@@ -49,27 +49,46 @@ window.Cloud = {
     return Cloud.session.access_token;
   },
 
-  // Vuelta desde un enlace del correo (confirmar cuenta o recuperar contraseña): los tokens vienen en el #.
+  // Enlaces del correo con PKCE: al pedir el correo se guarda aquí un secreto (verifier) y se envía solo su hash.
+  // El enlace vuelve con ?code= y Supabase entrega la sesión solo si se presenta ese secreto, así que un enlace
+  // armado por otra persona no puede abrir su cuenta en este navegador.
+  PKCE: 'valoriza-vilos:pkce',
+  async challenge(type) {
+    const b64 = (bytes) => btoa(String.fromCharCode.apply(null, new Uint8Array(bytes))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    const verifier = b64(crypto.getRandomValues(new Uint8Array(32)));
+    localStorage.setItem(Cloud.PKCE, JSON.stringify({ verifier: verifier, type: type }));
+    return { code_challenge: b64(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier))), code_challenge_method: 's256' };
+  },
+
+  // Vuelta desde un enlace del correo (confirmar cuenta o recuperar contraseña).
   async fromUrl() {
+    const q = new URLSearchParams(location.search);
     const h = new URLSearchParams(location.hash.slice(1));
-    if (!h.get('access_token') && !h.get('error')) return null;
-    history.replaceState(null, '', location.pathname + location.search);
-    if (h.get('error')) return { error: h.get('error_code') || h.get('error') };
-    const t = { access_token: h.get('access_token'), refresh_token: h.get('refresh_token'), expires_at: Number(h.get('expires_at')) || 0, expires_in: h.get('expires_in') };
-    t.user = await Cloud.call('/auth/v1/user', { headers: { Authorization: 'Bearer ' + t.access_token } });
-    Cloud.keep(t);
-    return { type: h.get('type') };
+    const code = q.get('code');
+    const error = q.get('error_code') || q.get('error') || h.get('error_code') || h.get('error');
+    // Los tokens sueltos en el # (flujo antiguo) se descartan sin usarlos: pueden venir de otra cuenta.
+    if (!code && !error && !h.get('access_token')) return null;
+    history.replaceState(null, '', location.pathname);
+    if (error) return { error: error };
+    const pending = JSON.parse(localStorage.getItem(Cloud.PKCE) || 'null');
+    if (!code || !pending) return { error: 'foreign_link' };
+    localStorage.removeItem(Cloud.PKCE);
+    Cloud.keep(await Cloud.post('/auth/v1/token?grant_type=pkce', { auth_code: code, code_verifier: pending.verifier }));
+    return { type: pending.type };
   },
   back() { return location.origin + location.pathname; },
 
   async signIn(email, password) { Cloud.keep(await Cloud.post('/auth/v1/token?grant_type=password', { email: email, password: password })); },
   // Si el proyecto pide confirmar el correo, no hay sesión hasta que la persona abre el enlace.
   async signUp(email, password, name) {
-    const r = await Cloud.post('/auth/v1/signup?redirect_to=' + encodeURIComponent(Cloud.back()), { email: email, password: password, data: { name: name } });
-    if (r.access_token) Cloud.keep(r);
+    const body = Object.assign({ email: email, password: password, data: { name: name } }, await Cloud.challenge('signup'));
+    const r = await Cloud.post('/auth/v1/signup?redirect_to=' + encodeURIComponent(Cloud.back()), body);
+    if (r.access_token) { localStorage.removeItem(Cloud.PKCE); Cloud.keep(r); }
     return !!r.access_token;
   },
-  recover(email) { return Cloud.post('/auth/v1/recover?redirect_to=' + encodeURIComponent(Cloud.back()), { email: email }); },
+  async recover(email) {
+    return Cloud.post('/auth/v1/recover?redirect_to=' + encodeURIComponent(Cloud.back()), Object.assign({ email: email }, await Cloud.challenge('recovery')));
+  },
   setPassword(password) { return Cloud.call('/auth/v1/user', { method: 'PUT', body: JSON.stringify({ password: password }) }, true); },
   async signOut() {
     try { await Cloud.post('/auth/v1/logout', {}, true); } catch (e) { /* sin conexión: igual se cierra aquí */ }
