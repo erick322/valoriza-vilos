@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Pruebas · Valoriza Vilos</title>
+<style>
+  body { font: 14px/1.5 system-ui, sans-serif; margin: 24px; background: #fff; color: #172024; }
+  .ok { color: #2f7a4b; } .fail { color: #b42318; font-weight: 600; }
+</style>
+</head>
+<body>
+<h1 id="sum">Pruebas…</h1>
+<ul id="out"></ul>
+<!-- Abrir con el servidor local: http://localhost:5173/tests.html -->
+<script src="js/utils.js"></script>
+<script src="js/data.js"></script>
+<script src="js/model.js"></script>
+<script>
+(async function () {
+  const results = [];
+  const eq = (name, got, want) => results.push({ name: name, ok: got === want, got: got, want: want });
+  const s = Data.seed();
+
+  const q = { items: [{ qty: '150', price: '4500', days: '1' }, { qty: '2', price: '8000', days: '5' }] };
+  eq('Neto de una cotización', Model.calc(q).neto, 755000);
+  eq('IVA 19%', Model.calc(q).iva, 143450);
+  eq('Total con IVA', Model.calc(q).total, 898450);
+  eq('Días vacíos o en cero cuentan como 1', Model.lineOf({ qty: '2', price: '100', days: '0' }), 200);
+
+  const half = { items: [{ qty: '2.5', price: '3333', days: '1' }, { qty: '2.5', price: '3333', days: '1' }] };
+  eq('Cada línea se redondea al peso', Model.lineOf(half.items[0]), 8333);
+  eq('La suma de las líneas cuadra con el neto', Model.calc(half).neto, 16666);
+
+  const cc = Model.costCalc(s.costs[0], s.zones);
+  eq('Costo directo', cc.directo, 34400);
+  eq('Recargo de zona Austral 15%', cc.zona, 5160);
+  eq('Precio sugerido con 20% de utilidad', Math.round(cc.sugerido), 47472);
+  eq('Zona borrada: recargo 0%', Model.costCalc(Object.assign({}, s.costs[0], { zoneId: 'no-existe' }), s.zones).zona, 0);
+
+  const groups = Model.priceGroups(s);
+  eq('Comparar precios: el más barato va primero', groups['cemento saco 25 kg|saco'].rows[0].providerId, 'p2');
+
+  eq('Teléfono chileno sin 56', Model.provLinks({ telefono: '9 1234 5678' }).tel, 'tel:+56912345678');
+  eq('Teléfono con +56', Model.provLinks({ telefono: '+56 9 1234 5678' }).wa, 'https://wa.me/56912345678');
+  eq('Sin teléfono no hay enlace', Model.provLinks({ telefono: '' }).tel, '#');
+
+  eq('Las iniciales se escapan', U.initials('<b x'), '&lt;X');
+
+  const failed = results.filter((r) => !r.ok).length;
+  document.getElementById('sum').textContent = failed ? failed + ' de ' + results.length + ' pruebas fallaron' : 'Las ' + results.length + ' pruebas pasan';
+  document.getElementById('sum').className = failed ? 'fail' : 'ok';
+  document.getElementById('out').innerHTML = results.map((r) =>
+    '<li class="' + (r.ok ? 'ok' : 'fail') + '">' + (r.ok ? '✓ ' : '✗ ') + U.esc(r.name) +
+    (r.ok ? '' : ': dio ' + U.esc(r.got) + ', se esperaba ' + U.esc(r.want)) + '</li>').join('');
+})();
+</script>
+</body>
+</html>
