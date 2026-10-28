@@ -75,6 +75,22 @@
   });
   window.addEventListener('online', () => { if (state.user && state.saveError === 'error') Store.push(); });
 
+  // Instalación como app: el navegador avisa cuando se puede instalar y se guarda ese aviso para el botón.
+  let installPrompt = null;
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    installPrompt = e;
+    App.setState({ canInstall: true }, 'view');
+  });
+  window.addEventListener('appinstalled', () => { installPrompt = null; App.setState({ canInstall: false }, 'view'); });
+  App.install = async () => {
+    if (!installPrompt) return;
+    installPrompt.prompt();
+    const choice = await installPrompt.userChoice;
+    if (choice.outcome === 'accepted') { installPrompt = null; App.setState({ canInstall: false, userMenu: false }, 'view'); }
+  };
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => { /* sin modo offline */ });
+
   render();
   // Vuelta desde un enlace del correo, o sesión ya abierta: se trae lo guardado en Supabase.
   Cloud.fromUrl().then((r) => {

@@ -124,7 +124,7 @@ window.Data = {
   ui() {
     return {
       screen: 'login', picker: false, userMenu: false,
-      loginEmail: '', loginPass: '', showPass: false, authError: '', authInfo: '', authBusy: false, saveError: '',
+      loginEmail: '', loginPass: '', showPass: false, authError: '', authInfo: '', authBusy: false, saveError: '', canInstall: false,
       reg: { name: '', email: '', pass: '', pass2: '' },
       currentId: null, currentCostId: null, currentProviderId: null, savedCostId: null,
       search: '', provSearch: '', provView: 'list', cmpSearch: '',

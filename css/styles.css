@@ -352,3 +352,4 @@ a[aria-disabled="true"] { opacity: .5; pointer-events: none; }
 .grid-2.gap-12 { gap: 12px; }
 .card.gap-8 { gap: 8px; }
 .row-title.wrap { white-space: normal; }
+.install-hint { text-align: center; }

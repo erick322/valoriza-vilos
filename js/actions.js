@@ -79,6 +79,7 @@
         set({ screen: 'list', reg: Data.ui().reg }, 'view');
       });
     },
+    install: () => App.install(),
     toggleUserMenu: () => set((s) => ({ userMenu: !s.userMenu })),
     async logout() {
       // Se envía lo pendiente antes de salir; si no hay conexión, se avisa para no perderlo.

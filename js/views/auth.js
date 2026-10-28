@@ -48,6 +48,7 @@ Views.login = function (s) {
     Views.submit(s, 'Ingresar', 'Ingresando…') +
     '<button type="button" class="linkbtn" data-click="forgotPass"' + (s.authBusy ? ' disabled' : '') + '>¿Olvidaste tu contraseña?</button>' +
     '<div class="grow"></div>' +
+    Views.install(s) +
     '<div class="auth-switch"><span>¿No tienes cuenta?</span><button type="button" class="linkbtn strong" data-click="goRegister">Crear cuenta</button></div>' +
     '</form></div>';
 };

@@ -98,6 +98,7 @@ Views.userMenu = function (s) {
     '<div class="who-text"><span class="who-name ellipsis">' + U.esc(s.user.name) + '</span>' +
     '<span class="who-mail ellipsis">' + U.esc(s.user.email) + '</span></div></div>' +
     '<button type="button" class="btn2 btn-block" data-click="goTheme" id="menu-first">' + icon('palette') + 'Diseño y datos de empresa</button>' +
+    Views.install(s) +
     '<button type="button" class="btn2 btn-block danger" data-click="logout">' + icon('logout') + 'Cerrar sesión</button>' +
     '</div></div>';
 };
@@ -126,4 +127,11 @@ Views.syncNote = function (s) {
     local: 'No se pudieron guardar los últimos cambios: el navegador no tiene espacio o bloquea el almacenamiento.'
   }[s.saveError];
   return text ? '<p class="alert" role="alert">' + text + '</p>' : '';
+};
+
+// Instalar en el teléfono: Chrome (Android y computador) ofrece el botón; en iPhone se hace desde Compartir.
+Views.install = function (s) {
+  if (s.canInstall) return '<button type="button" class="btn2 btn-block" data-click="install">' + icon('download') + 'Instalar en este teléfono</button>';
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent) && !navigator.standalone;
+  return ios ? '<p class="small install-hint">Para instalarla en tu iPhone: toca Compartir y luego «Agregar a pantalla de inicio».</p>' : '';
 };
