@@ -51,7 +51,7 @@ Views.theme = function (s) {
     '<h2 class="h2 sm colors-title">Colores de la app</h2>' +
     '<section class="pal-preview" aria-label="Vista previa de la paleta" style="background:' + pal.bg + '">' +
     '<div class="pal-head" style="background:' + pal.brand + '"><img src="assets/logo.png" alt="">' +
-    '<div class="who-text"><span class="small" style="color:var(--on-brand-3)">Vista previa</span><span class="hero-title" style="font-size:17px;color:#fff">Valoriza Vilos</span></div></div>' +
+    '<div class="who-text"><span class="small" style="color:var(--on-brand-3)">Vista previa</span><span class="hero-title" style="font-size:17px;color:#fff">Viloriza</span></div></div>' +
     '<div class="pal-body"><div class="btn-row" style="gap:8px"><span class="pill best">Mejor precio</span><span class="pill outline">Catálogo</span></div>' +
     '<div class="pal-card"><span class="sub-row-title">COT-0001</span><span class="row-amount acc">$1.234.567</span></div>' +
     '<span class="pal-btn" aria-hidden="true" style="background:' + pal.acc + '">Botón principal</span></div>' +

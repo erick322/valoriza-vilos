@@ -19,7 +19,7 @@ Views.regField = function (s, id, key, label, attrs) {
 Views.newPass = function (s) {
   const type = s.showPass ? 'text' : 'password';
   return '<div class="auth scroll">' +
-    '<div class="auth-head"><div class="who-text"><span class="auth-eyebrow">Valoriza Vilos</span><h1 class="auth-head-title">Nueva contraseña</h1></div></div>' +
+    '<div class="auth-head"><div class="who-text"><span class="auth-eyebrow">Viloriza</span><h1 class="auth-head-title">Nueva contraseña</h1></div></div>' +
     '<form class="auth-sheet reg" data-submit="submitNewPass" novalidate>' +
     '<p class="lead">Elige una contraseña nueva para ' + U.esc(s.user.email) + '.</p>' +
     Views.regField(s, 'np-pass', 'pass', 'Contraseña nueva', 'type="' + type + '" autocomplete="new-password" placeholder="Mínimo 8 caracteres"') +
@@ -33,7 +33,7 @@ Views.login = function (s) {
   return '<div class="auth scroll">' +
     '<div class="auth-hero">' +
     '<img src="assets/logo.png" alt="Logo" class="auth-logo">' +
-    '<span class="auth-title">Valoriza Vilos</span>' +
+    '<span class="auth-title">Viloriza</span>' +
     '<span class="auth-sub">Cotizaciones, costos y proveedores en tu bolsillo</span>' +
     '</div>' +
     '<form class="auth-sheet" data-submit="submitLogin" novalidate>' +
@@ -58,7 +58,7 @@ Views.register = function (s) {
   return '<div class="auth scroll">' +
     '<div class="auth-head">' +
     '<button type="button" class="auth-back" data-click="goLogin" aria-label="Volver al inicio de sesión">' + icon('back') + '</button>' +
-    '<div class="who-text"><span class="auth-eyebrow">Valoriza Vilos</span><h1 class="auth-head-title">Crea tu cuenta</h1></div>' +
+    '<div class="who-text"><span class="auth-eyebrow">Viloriza</span><h1 class="auth-head-title">Crea tu cuenta</h1></div>' +
     '</div>' +
     '<form class="auth-sheet reg" data-submit="submitRegister" novalidate>' +
     '<p class="lead">Cada usuario tiene su propio acceso para crear cotizaciones, análisis de costos y fichas de proveedores.</p>' +

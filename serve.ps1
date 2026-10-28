@@ -10,7 +10,7 @@ $types = @{
 $listener = New-Object System.Net.HttpListener
 $listener.Prefixes.Add("http://localhost:$Port/")
 $listener.Start()
-Write-Host "Valoriza Vilos en http://localhost:$Port/"
+Write-Host "Viloriza en http://localhost:$Port/"
 
 while ($listener.IsListening) {
   $ctx = $listener.GetContext()

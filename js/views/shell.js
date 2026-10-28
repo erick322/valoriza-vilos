@@ -39,7 +39,7 @@ Views.header = function (s) {
     ? '<button type="button" class="icon-btn" data-click="goBack" aria-label="Volver">' + icon('back') + '</button>'
     : '<div class="brand-badge"><img src="assets/logo.png" alt="Logo"></div>';
   return '<header class="topbar">' + lead +
-    '<div class="topbar-text"><span class="topbar-eyebrow">Valoriza Vilos</span>' +
+    '<div class="topbar-text"><span class="topbar-eyebrow">Viloriza</span>' +
     '<h1 class="topbar-title">' + U.esc(Views.title(s)) + '</h1></div>' +
     '<button type="button" class="avatar-btn" data-click="toggleUserMenu" aria-label="Cuenta de ' + U.esc(s.user.name) +
     '" aria-expanded="' + (s.userMenu ? 'true' : 'false') + '" aria-haspopup="dialog">' + U.initials(s.user.name || s.user.email) + '</button>' +
