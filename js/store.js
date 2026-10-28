@@ -57,7 +57,7 @@ window.Store = {
       const c = Store.get(Store.cacheKey(user));
       if (c && c.synced === false) return Store.push();
       const remote = await Cloud.load();
-      if (remote) return App.setState(Store.pick(remote, Data.seed()), true);
+      if (remote) return App.setState(Store.pick(remote, Data.seed()), 'remote');
       // Cuenta nueva en Supabase: se sube lo que hubiera en este navegador de la versión local, o los ejemplos.
       const local = Store.get('valoriza-vilos:v1:' + user.email);
       App.setState(Store.pick(local, Data.seed()));
